@@ -35,7 +35,8 @@ scalafmtOnCompile in ThisBuild := true
 
 lazy val root = project.
   in(file(".")).
-  aggregate(rainierCore, rainierPlot, rainierExample, rainierBenchmark).
+  aggregate(rainierCore, rainierPlot, rainierScalacheck, rainierCats).
+  aggregate(rainierExample, rainierBenchmark).
   aggregate(shadedAsm).
   settings(unpublished: _*)
 
@@ -62,6 +63,26 @@ lazy val rainierPlot = project.
   settings(
     resolvers += Resolver.bintrayRepo("cibotech", "public"),
     libraryDependencies += "com.cibo" %% "evilplot" % "0.2.0").
+  settings(publishSettings)
+
+lazy val rainierScalacheck = project.
+  in(file("rainier-scalacheck")).
+  settings(name := "rainier-scalacheck").
+  dependsOn(rainierCore).
+  settings(libraryDependencies ++= Seq(
+    "org.scalacheck" %% "scalacheck" % "1.14.0")).
+  settings(publishSettings)
+
+lazy val rainierCats = project.
+  in(file("rainier-cats")).
+  settings(name := "rainier-cats").
+  dependsOn(rainierCore).
+  dependsOn(rainierScalacheck % "test").
+  settings(libraryDependencies ++= Seq(
+    "org.typelevel" %% "cats-core" % "1.1.0",
+    "org.typelevel" %% "cats-laws" % "1.1.0" % "test",
+    "org.typelevel" %% "cats-testkit" % "1.1.0" % "test",
+    "org.scalacheck" %% "scalacheck" % "1.14.0" % "test")).
   settings(publishSettings)
 
 lazy val rainierExample = project.
